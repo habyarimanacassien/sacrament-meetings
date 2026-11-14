@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { connection } from 'next/server';
 import { Suspense } from 'react';
 import NavLinks, { type NavItem } from '@/components/NavLinks';
+import { toIsoDate } from '@/lib/dates';
 import { site } from '@/lib/site';
 
 const mainNav: NavItem[] = [
@@ -24,7 +25,7 @@ async function CurrentDate() {
     day: 'numeric',
   }).format(today);
 
-  return <time dateTime={today.toISOString().slice(0, 10)}>{label}</time>;
+  return <time dateTime={toIsoDate(today)}>{label}</time>;
 }
 
 export default function Header() {
@@ -32,7 +33,7 @@ export default function Header() {
     <header className="bg-brand text-white print:hidden">
       <div className="mx-auto flex w-full max-w-5xl flex-wrap items-center justify-between gap-x-6 gap-y-3 px-4 py-4 sm:px-6">
         <div>
-          <Link href="/" className="font-heading text-xl font-semibold">
+          <Link href="/" className="text-xl font-semibold">
             {site.wardName}
           </Link>
           <p className="text-sm text-white/90">

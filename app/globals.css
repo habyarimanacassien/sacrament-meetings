@@ -2,7 +2,7 @@
 
 /*
   Design tokens. Tailwind turns each --color-* and --font-* value into
-  utility classes, for example bg-paper, text-ink, border-line, font-heading.
+  utility classes, for example bg-paper, text-ink, border-line, font-sans.
 */
 @theme inline {
   --color-paper: #faf8f4;
@@ -16,18 +16,11 @@
   --color-accent: #8a5a12;
 
   --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
-  --font-heading: var(--font-lora), ui-serif, Georgia, serif;
 }
 
 body {
   background: var(--color-paper);
   color: var(--color-ink);
-}
-
-h1,
-h2,
-h3 {
-  font-family: var(--font-heading);
 }
 
 /* One visible focus style for every link and button (keyboard users). */
