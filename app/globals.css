@@ -1,26 +1,49 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
+/*
+  Design tokens. Tailwind turns each --color-* and --font-* value into
+  utility classes, for example bg-paper, text-ink, border-line, font-heading.
+*/
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
+  --color-paper: #faf8f4;
+  --color-card: #ffffff;
+  --color-ink: #1f2933;
+  --color-muted: #52606d;
+  --color-line: #d9d4c7;
+  --color-brand: #1d4e6f;
+  --color-brand-dark: #153a53;
+  --color-brand-soft: #e3eef5;
+  --color-accent: #8a5a12;
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-heading: var(--font-lora), ui-serif, Georgia, serif;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--color-paper);
+  color: var(--color-ink);
+}
+
+h1,
+h2,
+h3 {
+  font-family: var(--font-heading);
+}
+
+/* One visible focus style for every link and button (keyboard users). */
+:focus-visible {
+  outline: 3px solid var(--color-accent);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* Printed programs: white page, no shadows, sensible margins. */
+@media print {
+  body {
+    background: #ffffff;
+  }
+
+  @page {
+    margin: 1.5cm;
+  }
 }

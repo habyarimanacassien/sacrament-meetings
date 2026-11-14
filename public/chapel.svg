@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 420" role="img">
+  <rect width="640" height="420" rx="24" fill="#e3eef5"/>
+  <circle cx="500" cy="110" r="46" fill="#f6e3b4"/>
+  <path d="M0 330 C120 270 220 300 330 320 S540 280 640 310 V420 H0Z" fill="#c9dfc6"/>
+  <path d="M0 365 C140 330 300 350 420 360 S580 345 640 350 V420 H0Z" fill="#a9cba6"/>
+  <!-- chapel -->
+  <rect x="170" y="230" width="300" height="130" fill="#fbf7ee" stroke="#1d4e6f" stroke-width="4"/>
+  <path d="M158 232 L320 150 L482 232Z" fill="#1d4e6f"/>
+  <rect x="296" y="96" width="48" height="74" fill="#fbf7ee" stroke="#1d4e6f" stroke-width="4"/>
+  <path d="M290 98 L320 40 L350 98Z" fill="#1d4e6f"/>
+  <rect x="298" y="290" width="44" height="70" rx="22" fill="#1d4e6f"/>
+  <g fill="#bcd6e6" stroke="#1d4e6f" stroke-width="3">
+    <rect x="200" y="262" width="34" height="58" rx="17"/>
+    <rect x="250" y="262" width="34" height="58" rx="17"/>
+    <rect x="356" y="262" width="34" height="58" rx="17"/>
+    <rect x="406" y="262" width="34" height="58" rx="17"/>
+  </g>
+  <rect x="312" y="118" width="16" height="30" rx="8" fill="#bcd6e6" stroke="#1d4e6f" stroke-width="3"/>
+  <path d="M270 420 C290 390 300 372 304 360 H336 C340 372 350 390 370 420Z" fill="#efe6d2"/>
+</svg>
