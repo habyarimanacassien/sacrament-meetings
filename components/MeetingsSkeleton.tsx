@@ -1,4 +1,5 @@
-export default function MeetingsLoading() {
+/** Placeholder cards shown while meetings load from the database. */
+export default function MeetingsSkeleton() {
   return (
     <div role="status" className="flex flex-col gap-4">
       <p className="text-muted">Loading meetings…</p>

@@ -2,13 +2,15 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import MeetingDetail from '@/components/MeetingDetail';
 import PrintButton from '@/components/PrintButton';
-import { fetchMeetingById } from '@/lib/api';
+import { getMeetingById } from '@/lib/meetings-db';
 
 export default async function MeetingPage({
   params,
 }: PageProps<'/meetings/[id]'>) {
   const { id } = await params;
-  const meeting = await fetchMeetingById(id);
+
+  // Only whole positive numbers are ids; "abc" or "1e2" go straight to 404.
+  const meeting = /^\d+$/.test(id) ? await getMeetingById(Number(id)) : null;
 
   if (!meeting) notFound();
 
