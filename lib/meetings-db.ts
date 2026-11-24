@@ -140,12 +140,18 @@ export async function getMeetingByDate(
 /** Largest value a SERIAL (int4) column can hold. */
 const MAX_SERIAL_ID = 2_147_483_647;
 
+/**
+ * True for a number that could be a row id. NaN, decimals, or ids past the
+ * int4 range can't exist, and Postgres would throw on the out-of-range ones.
+ */
+export function isValidMeetingId(id: number): boolean {
+  return Number.isInteger(id) && id >= 1 && id <= MAX_SERIAL_ID;
+}
+
 export async function getMeetingById(
   id: number,
 ): Promise<SacramentMeeting | null> {
-  // NaN, decimals, or ids past the int4 range can't exist, and Postgres
-  // would throw on the out-of-range ones, so answer "not found" directly.
-  if (!Number.isInteger(id) || id < 1 || id > MAX_SERIAL_ID) return null;
+  if (!isValidMeetingId(id)) return null;
 
   const rows = await sql`
     SELECT *, to_char(date, 'YYYY-MM-DD') AS iso_date
@@ -156,24 +162,95 @@ export async function getMeetingById(
   return row ? toMeeting(row) : null;
 }
 
-// Mutation stubs: wired to the database in Week 04 when the forms are built.
-export async function addMeeting(
-  data: Omit<SacramentMeeting, 'id'>,
-): Promise<SacramentMeeting> {
-  void data;
-  throw new Error('addMeeting: database implementation coming in Week 04');
+/** Everything needed to save a meeting; the database assigns the id. */
+export type MeetingInput = Omit<SacramentMeeting, 'id'>;
+
+/**
+ * Postgres error code for a UNIQUE constraint violation. The `date` column
+ * is UNIQUE, so this means "a meeting is already planned for that Sunday".
+ */
+const UNIQUE_VIOLATION = '23505';
+
+/** True when a database error came from the UNIQUE (date) constraint. */
+export function isDuplicateDateError(error: unknown): boolean {
+  return (
+    typeof error === 'object' &&
+    error !== null &&
+    'code' in error &&
+    error.code === UNIQUE_VIOLATION
+  );
 }
 
+/**
+ * Inserts a meeting and returns it with its new id.
+ * JSONB values are sent as JSON text and cast; arrays become TEXT[].
+ */
+export async function addMeeting(data: MeetingInput): Promise<SacramentMeeting> {
+  const rows = await sql`
+    INSERT INTO meetings (
+      date, meeting_type, presiding, conducting, announcements,
+      opening_hymn, opening_prayer, ward_business, stake_business,
+      sacrament_hymn, speakers, closing_hymn, closing_prayer
+    ) VALUES (
+      ${data.date}::date,
+      ${data.meetingType},
+      ${data.presiding},
+      ${data.conducting},
+      ${data.announcements ?? []}::text[],
+      ${JSON.stringify(data.openingHymn)}::jsonb,
+      ${data.openingPrayer},
+      ${JSON.stringify(data.wardBusiness)}::jsonb,
+      ${data.stakeBusiness},
+      ${JSON.stringify(data.sacramentHymn)}::jsonb,
+      ${JSON.stringify(data.speakers)}::jsonb,
+      ${JSON.stringify(data.closingHymn)}::jsonb,
+      ${data.closingPrayer}
+    )
+    RETURNING *, to_char(date, 'YYYY-MM-DD') AS iso_date
+  `;
+  return toMeeting((rows as MeetingRow[])[0]);
+}
+
+/**
+ * Replaces every field of an existing meeting (the edit form always sends
+ * the whole meeting). Returns the saved meeting, or null if the id is gone.
+ */
 export async function updateMeeting(
   id: number,
-  updates: Partial<SacramentMeeting>,
+  data: MeetingInput,
 ): Promise<SacramentMeeting | null> {
-  void id;
-  void updates;
-  throw new Error('updateMeeting: database implementation coming in Week 04');
+  if (!isValidMeetingId(id)) return null;
+
+  const rows = await sql`
+    UPDATE meetings SET
+      date           = ${data.date}::date,
+      meeting_type   = ${data.meetingType},
+      presiding      = ${data.presiding},
+      conducting     = ${data.conducting},
+      announcements  = ${data.announcements ?? []}::text[],
+      opening_hymn   = ${JSON.stringify(data.openingHymn)}::jsonb,
+      opening_prayer = ${data.openingPrayer},
+      ward_business  = ${JSON.stringify(data.wardBusiness)}::jsonb,
+      stake_business = ${data.stakeBusiness},
+      sacrament_hymn = ${JSON.stringify(data.sacramentHymn)}::jsonb,
+      speakers       = ${JSON.stringify(data.speakers)}::jsonb,
+      closing_hymn   = ${JSON.stringify(data.closingHymn)}::jsonb,
+      closing_prayer = ${data.closingPrayer}
+    WHERE id = ${id}
+    RETURNING *, to_char(date, 'YYYY-MM-DD') AS iso_date
+  `;
+  const row = (rows as MeetingRow[])[0];
+  return row ? toMeeting(row) : null;
 }
 
+/** Deletes one meeting. Returns false when no meeting had that id. */
 export async function deleteMeeting(id: number): Promise<boolean> {
-  void id;
-  throw new Error('deleteMeeting: database implementation coming in Week 04');
+  if (!isValidMeetingId(id)) return false;
+
+  const rows = await sql`
+    DELETE FROM meetings
+    WHERE id = ${id}
+    RETURNING id
+  `;
+  return rows.length > 0;
 }

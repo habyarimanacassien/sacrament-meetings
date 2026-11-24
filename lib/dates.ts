@@ -26,3 +26,15 @@ export function formatLongDate(isoDate: string): string {
     timeZone: 'UTC',
   }).format(new Date(`${isoDate}T00:00:00Z`));
 }
+
+/** True for a real calendar date like '2026-03-01' (rejects '2026-02-31'). */
+export function isValidIsoDate(value: string): boolean {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(value)) return false;
+  const parsed = new Date(`${value}T00:00:00Z`);
+  return !Number.isNaN(parsed.getTime()) && parsed.toISOString().startsWith(value);
+}
+
+/** True when a valid 'YYYY-MM-DD' date falls on a Sunday. */
+export function isSunday(isoDate: string): boolean {
+  return new Date(`${isoDate}T00:00:00Z`).getUTCDay() === 0;
+}

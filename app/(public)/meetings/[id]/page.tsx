@@ -23,7 +23,15 @@ export default async function MeetingPage({
         >
           ← Back to all meetings
         </Link>
-        <PrintButton />
+        <div className="flex flex-wrap items-center gap-3">
+          <Link
+            href={`/meetings/${meeting.id}/edit`}
+            className="rounded-md border border-brand px-4 py-2 text-sm font-semibold text-brand-dark hover:bg-brand-soft"
+          >
+            Edit meeting
+          </Link>
+          <PrintButton />
+        </div>
       </div>
       <MeetingDetail meeting={meeting} />
     </div>
